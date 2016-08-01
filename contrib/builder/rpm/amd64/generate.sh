@@ -52,6 +52,17 @@ for version in "${versions[@]}"; do
 		*) ;;
 	esac
 
+        case "$from" in
+                centos:6)
+                        # Install the latest kernel-lt-headers from elrepo to build against
+			echo "RUN rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org"  >> "$version/Dockerfile"
+			echo "RUN yum install -y http://www.elrepo.org/elrepo-release-6-6.el6.elrepo.noarch.rpm"  >> "$version/Dockerfile"
+			echo "RUN yum install -y --enablerepo=elrepo-kernel kernel-lt-headers"  >> "$version/Dockerfile"
+			echo >> "$version/Dockerfile"
+			;;
+                *) ;;
+        esac
+
 	case "$from" in
 		centos:*)
 			# get "Development Tools" packages dependencies
@@ -106,9 +117,17 @@ for version in "${versions[@]}"; do
 			;;
 	esac
 
-	# opensuse & oraclelinx:6 do not have the right libseccomp libs
+        case "$from" in
+                centos:6)
+                        # doesn't use btrfs, doesn't have a devel package for it
+                        packages=( "${packages[@]/btrfs-progs-devel}" )
+			extraBuildTags+=' exclude_graphdriver_btrfs'
+                        ;;
+        esac
+
+	# opensuse, oraclelinx:6 & centos:6 do not have the right libseccomp libs
 	case "$from" in
-		opensuse:*|oraclelinux:6)
+		opensuse:*|oraclelinux:6|centos:6)
 			packages=( "${packages[@]/libseccomp-devel}" )
 			runcBuildTags="selinux"
 			;;
