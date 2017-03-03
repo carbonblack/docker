@@ -11,7 +11,7 @@ RUN yum install -y --enablerepo=elrepo-kernel kernel-lt-headers
 RUN yum groupinstall -y "Development Tools"
 RUN yum install -y device-mapper-devel glibc-static libselinux-devel libtool-ltdl-devel pkgconfig selinux-policy selinux-policy-devel sqlite-devel systemd-devel tar git cmake
 
-ENV GO_VERSION 1.7.3
+ENV GO_VERSION 1.7.5
 RUN curl -fSL "https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz" | tar xzC /usr/local
 ENV PATH $PATH:/usr/local/go/bin
 
